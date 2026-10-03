@@ -7,7 +7,7 @@ const FREE_SCRIPTS = 2;
 const STORE_BILLING = 'https://store.microsoft.com/billing';
 const PRO_SKU = 'cuescroll_pro';
 const PRO_IDS = [PRO_SKU];
-const STORE_URL = 'https://apps.microsoft.com/search?query=CueScroll';
+const STORE_URL = 'https://apps.microsoft.com/detail/9NB48B109NR4';
 let proAvailable = false; // Pro limits apply only when the Store actually sells the add-on
 let proSku = PRO_SKU;
 let isPro = false;
