@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CueScroll – Teleprompter for Videos &amp; Meetings</title>
+  <meta name="description" content="A clean, offline teleprompter. Paste your script, press play and read while you record videos or present in online meetings.">
+  <meta name="theme-color" content="#111827">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon-192.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="editor" class="editor">
+    <header class="topbar">
+      <div class="brand">
+        <img src="icon-192.png" alt="" width="28" height="28">
+        <span>CueScroll</span>
+      </div>
+      <div class="top-right">
+        <span class="tag">100% offline · your scripts stay on this PC</span>
+        <button id="proBtn" class="pro-btn" hidden>★ Get Pro</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <aside class="side">
+        <div class="side-head">
+          <h2>Scripts</h2>
+          <button id="newScript" class="ghost" title="New script">+ New</button>
+        </div>
+        <ul id="scriptList" class="script-list"></ul>
+        <label class="ghost file-btn">Import .txt<input id="importFile" type="file" accept=".txt,.md,text/plain" hidden></label>
+        <a class="promo" href="https://apps.microsoft.com/detail/9NPWMMZ1NPPV" target="_blank" rel="noopener">
+          <img src="https://quan-3702.github.io/pdftoolbox/icon-192.png" alt="" width="28" height="28">
+          <span><strong>PDF Toolbox</strong><br>Merge, split, compress &amp; sign PDFs</span>
+        </a>
+        <a class="promo" href="https://apps.microsoft.com/detail/9NF418NKG80Z" target="_blank" rel="noopener">
+          <img src="https://quan-3702.github.io/snappdf/icon-192.png" alt="" width="28" height="28">
+          <span><strong>SnapPDF</strong><br>Combine photos into one PDF</span>
+        </a>
+        <a class="promo feedback" href="mailto:thequan03072002@gmail.com?subject=CueScroll%20feedback">✉ Feedback &amp; support</a>
+      </aside>
+
+      <section class="work">
+        <input id="title" class="title" type="text" maxlength="80" placeholder="Script title" aria-label="Script title">
+        <textarea id="text" spellcheck="true" placeholder="Paste or type your script here…" aria-label="Script text"></textarea>
+        <div class="statbar">
+          <span id="stats">0 words</span>
+          <span class="row-btns">
+            <button id="delScript" class="ghost">Delete script</button>
+            <button id="start" class="primary big">▶ Start prompter</button>
+          </span>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <h2>Scrolling</h2>
+        <label class="field">Speed <span class="val" id="speedVal"></span>
+          <input id="speed" type="range" min="1" max="100" step="1"></label>
+        <label class="field">Countdown before start
+          <select id="countdown"><option value="0">None</option><option value="3">3 seconds</option><option value="5">5 seconds</option><option value="10">10 seconds</option></select></label>
+
+        <h2>Text</h2>
+        <label class="field">Font size <span class="val" id="sizeVal"></span>
+          <input id="size" type="range" min="24" max="140" step="2"></label>
+        <label class="field">Text width <span class="val" id="widthVal"></span>
+          <input id="width" type="range" min="30" max="100" step="5"></label>
+        <label class="field">Line spacing <span class="val" id="lhVal"></span>
+          <input id="lh" type="range" min="1.1" max="2.2" step="0.1"></label>
+        <div class="row">
+          <label class="field grow">Align
+            <select id="align"><option value="left">Left</option><option value="center">Center</option></select></label>
+          <label class="field grow">Colors
+            <select id="theme"><option value="white">White on black</option><option value="yellow">Yellow on black</option><option value="green">Green on black</option><option value="dark">Black on white</option></select></label>
+        </div>
+
+        <h2>Display</h2>
+        <label class="check"><input id="mirrorH" type="checkbox"> Mirror horizontally <span class="hint">(beam-splitter glass)</span></label>
+        <label class="check"><input id="mirrorV" type="checkbox"> Flip vertically</label>
+        <label class="check"><input id="guide" type="checkbox"> Reading guide line</label>
+        <p class="hint keys"><kbd>Space</kbd> play/pause · <kbd>↑</kbd><kbd>↓</kbd> speed · <kbd>←</kbd><kbd>→</kbd> jump · <kbd>F</kbd> fullscreen · <kbd>Esc</kbd> exit</p>
+      </aside>
+    </main>
+  </div>
+
+  <div id="stage" class="stage" hidden>
+    <video id="cam" class="cam" muted playsinline hidden></video>
+    <div id="flip" class="flip">
+      <div id="scroller" class="scroller"></div>
+    </div>
+    <div id="guideLine" class="guide-line" hidden></div>
+    <div id="count" class="count" hidden></div>
+    <div id="bar" class="bar">
+      <button id="exit" title="Back to editor (Esc)">✕</button>
+      <button id="play" class="play" title="Play / pause (Space)">▶</button>
+      <button id="restart" title="Back to start (Home)">⟲</button>
+      <button id="slower" title="Slower (↓)">−</button>
+      <span id="barSpeed" class="bar-val"></span>
+      <button id="faster" title="Faster (↑)">+</button>
+      <button id="smaller" title="Smaller text">A−</button>
+      <button id="bigger" title="Bigger text">A+</button>
+      <button id="mirrorBtn" title="Mirror (M)">⇋</button>
+      <span id="clock" class="bar-val clock"></span>
+      <span class="spacer"></span>
+      <button id="recBtn" title="Record yourself with the webcam (Pro)">● Record</button>
+      <button id="floatBtn" title="Always-on-top floating window (Pro)">⧉ Float</button>
+      <button id="fsBtn" title="Fullscreen (F)">⛶</button>
+    </div>
+    <div id="toast" class="toast" hidden></div>
+  </div>
+
+  <dialog id="proDialog" class="dlg">
+    <h2>CueScroll Pro</h2>
+    <p class="muted">One-time purchase. Yours forever on this Microsoft account.</p>
+    <ul class="pro-list">
+      <li><strong>Record yourself</strong> with the webcam while you read – saved as a video file on your PC</li>
+      <li><strong>Floating window</strong> that stays on top of Zoom, Teams or your camera app</li>
+      <li><strong>Unlimited scripts</strong> <span class="muted">(Free: 2)</span></li>
+    </ul>
+    <p id="proMsg" class="pro-msg" hidden></p>
+    <div class="row-btns">
+      <button id="buyBtn" class="primary">Unlock Pro</button>
+      <button id="restoreBtn" class="ghost">Restore purchase</button>
+      <button id="closePro" class="ghost">Not now</button>
+    </div>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
